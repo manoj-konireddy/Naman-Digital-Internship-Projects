@@ -20,15 +20,15 @@ It provides an instant Weak / Medium / Strong rating, helping users create secur
 
 ✅ Strength detection rules:
 
-   Minimum length: 8 characters
+   > Minimum length: 8 characters
 
-   At least 1 uppercase letter
+   > At least 1 uppercase letter
 
-   At least 1 lowercase letter
+   > At least 1 lowercase letter
 
-   At least 1 digit
+   > At least 1 digit
 
-   At least 1 special character
+   > At least 1 special character
 
 🛠️ Tech Stack
 
