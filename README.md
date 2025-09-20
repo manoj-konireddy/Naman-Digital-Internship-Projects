@@ -46,3 +46,4 @@ password_strength_checker/
 │   └── style.css       # CSS styles
 │── templates/
 │   └── index.html      # Frontend HTML
+
