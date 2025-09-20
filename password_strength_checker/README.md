@@ -40,9 +40,15 @@ Libraries: flask, re (regex for validation)
 
 📂 Project Structure
 password_strength_checker/
+
 │── app.py              # Flask backend
+
 │── requirements.txt    # Python dependencies
+
 │── static/
+
 │   └── style.css       # CSS styles
+
 │── templates/
+
 │   └── index.html      # Frontend HTML
