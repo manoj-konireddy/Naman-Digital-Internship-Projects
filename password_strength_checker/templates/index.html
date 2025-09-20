@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Strength Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Password Strength Checker</h1>
+        <p class="subtitle">Check how strong your password is 🔐</p>
+
+        <!-- Fixed form to prevent normal submission -->
+        <form id="passwordForm">
+            <div class="input-group">
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <span class="toggle-password" onclick="togglePassword()">
+                    <i id="eyeIcon" class="fa fa-eye"></i>
+                </span>
+            </div>
+            <button type="submit">Check Strength</button>
+        </form>
+
+        <!-- Added result div to display strength without page refresh -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const pwdField = document.getElementById("password");
+            const eyeIcon = document.getElementById("eyeIcon");
+            if (pwdField.type === "password") {
+                pwdField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                pwdField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            const password = document.getElementById("password").value;
+            const resultDiv = document.getElementById("result");
+            
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'password=' + encodeURIComponent(password)
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `<p class="result ${data.strength.toLowerCase()}">Strength: ${data.strength}</p>`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = '<p class="result">Error checking password strength</p>';
+            });
+        });
+    </script>
+</body>
+</html>

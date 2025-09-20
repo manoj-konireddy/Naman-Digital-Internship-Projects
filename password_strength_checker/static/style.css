@@ -1,0 +1,111 @@
+/* Full-page center */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Container box */
+.container {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
+
+/* Heading + subtitle */
+.container h1 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.subtitle {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Input group with eye icon */
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+input[type="password"],
+input[type="text"] {
+  /* Fixed width and added box-sizing */
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.3s;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border: 2px solid #667eea;
+}
+
+/* Eye icon */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 18px;
+  /* Added z-index to ensure icon is clickable */
+  z-index: 1;
+}
+
+.toggle-password:hover {
+  color: #333;
+}
+
+/* Button */
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  /* Enhanced button styling for better contrast */
+  background: #667eea !important;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button:hover {
+  /* Darker hover color for better contrast */
+  background: #5a67d8 !important;
+}
+
+/* Result text */
+.result {
+  font-size: 18px;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.result.weak {
+  color: red;
+}
+.result.medium {
+  color: orange;
+}
+.result.strong {
+  color: green;
+}
