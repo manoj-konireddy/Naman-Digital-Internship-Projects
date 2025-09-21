@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureChat - End-to-end Encrypted Messaging</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            min-height: 100vh;
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(55, 65, 81, 0.3);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-8 w-full max-w-md">
+            <!-- Logo and Branding -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-2xl mb-4 glow-green">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">SecureChat</h1>
+                <p class="text-gray-400">End-to-end encrypted messaging platform</p>
+            </div>
+
+            <!-- Get Started Section -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-center mb-2">Get Started</h2>
+                <p class="text-gray-400 text-center text-sm">Sign in or create an account to start secure messaging</p>
+            </div>
+
+            <!-- Auth Toggle -->
+            <div class="flex bg-gray-800 rounded-lg p-1 mb-6">
+                <button id="signin-tab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all bg-green-500 text-white">
+                    Sign In
+                </button>
+                <button id="signup-tab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all text-gray-400 hover:text-white">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Auth Form -->
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                    <input type="text" id="username" required 
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-gray-400"
+                           placeholder="Enter your username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                    <input type="password" id="password" required 
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-gray-400"
+                           placeholder="Enter your password">
+                </div>
+                <button type="submit" id="auth-submit" 
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors glow-green">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Security Notice -->
+            <div class="mt-6 flex items-center justify-center text-sm text-gray-400">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                Your data is encrypted and stored locally
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="hidden min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="glass-effect border-b border-gray-700 p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center glow-green">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold">SecureChat</h1>
+                        <p class="text-sm text-gray-400">End-to-end encrypted</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span id="user-info" class="text-sm text-gray-400"></span>
+                    <button id="logout-btn" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-medium transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex">
+            <!-- Messages Area -->
+            <main class="flex-1 flex flex-col">
+                <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <!-- Messages will be inserted here -->
+                </div>
+                
+                <!-- Message Input -->
+                <div class="p-4 border-t border-gray-700">
+                    <form id="message-form" class="flex space-x-3">
+                        <input type="text" id="message-input" 
+                               class="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-gray-400"
+                               placeholder="Type your encrypted message...">
+                        <button type="submit" 
+                                class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors glow-green">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </main>
+
+            <!-- Users Sidebar -->
+            <aside class="w-64 glass-effect border-l border-gray-700 p-4">
+                <h3 class="font-semibold mb-4 flex items-center">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Online Users
+                </h3>
+                <div id="users-list" class="space-y-2">
+                    <!-- Users will be inserted here -->
+                </div>
+                
+                <!-- Admin Panel Section -->
+                <div id="admin-panel" class="hidden mt-6 pt-4 border-t border-gray-700">
+                    <h3 class="font-semibold mb-4 flex items-center text-yellow-400">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        Admin Panel
+                    </h3>
+                    <div class="space-y-2">
+                        <button id="clear-messages-btn" class="w-full px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-lg transition-colors">
+                            Clear All Messages
+                        </button>
+                        <button id="user-stats-btn" class="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors">
+                            View User Stats
+                        </button>
+                        <button id="export-data-btn" class="w-full px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded-lg transition-colors">
+                            Export Chat Data
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        
+        <!-- Admin Modal for User Stats -->
+        <div id="admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="glass-effect rounded-2xl p-6 w-full max-w-2xl max-h-96 overflow-y-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-white">User Statistics</h2>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modal-content" class="text-gray-300">
+                    <!-- Modal content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
